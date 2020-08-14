@@ -22,13 +22,20 @@ namespace EasyPost {
             restRequest.AddHeader("Accept", "application/json");
         }
 
-        public T Execute<T>() where T : new() {
-            Client client = ClientManager.Build();
+        public T Execute<T>(Client client = null) where T : new() {
+            if (client == null)
+            {
+                client = ClientManager.Build();
+            }
+
             return client.Execute<T>(this);
         }
 
-        public IRestResponse Execute() {
-            Client client = ClientManager.Build();
+        public IRestResponse Execute(Client client = null) {
+            if (client == null)
+            {
+                client = ClientManager.Build();
+            }
             return client.Execute(this);
         }
 
