@@ -69,8 +69,8 @@ namespace EasyPostTest {
         [TestMethod]
         public void TestAddRemoveShipments() {
             Batch batch = Batch.Create();
-            Shipment shipment = Shipment.Create(shipmentParameters);
-            Shipment otherShipment = Shipment.Create(shipmentParameters);
+            Shipment shipment = Shipment.Create(null, shipmentParameters);
+            Shipment otherShipment = Shipment.Create(null, shipmentParameters);
 
             while (batch.state != "created")
                 batch = Batch.Retrieve(batch.id);

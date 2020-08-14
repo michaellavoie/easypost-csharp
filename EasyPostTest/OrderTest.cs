@@ -51,20 +51,20 @@ namespace EasyPostTest {
 
         [TestMethod]
         public void TestCreateAndRetrieveOrder() {
-            Order order = Order.Create(parameters);
+            Order order = Order.Create(null, parameters);
 
             Assert.IsNotNull(order.id);
             Assert.AreEqual(order.reference, "OrderRef");
 
-            Order retrieved = Order.Retrieve(order.id);
+            Order retrieved = Order.Retrieve(null, order.id);
             Assert.AreEqual(order.id, retrieved.id);
         }
 
         [TestMethod]
         public void TestGetRates() {
-            Order order = Order.Create(parameters);
+            Order order = Order.Create(null, parameters);
             List<Rate> old = order.rates;
-            order.GetRates();
+            order.GetRates(null);
             Assert.AreNotEqual(old, order.rates);
         }
 
@@ -72,20 +72,20 @@ namespace EasyPostTest {
         [ExpectedException(typeof(ResourceAlreadyCreated))]
         public void TestCreateOrderWithId() {
             Order order = new Order() { id = "order_asjhd" };
-            order.Create();
+            order.Create(null);
         }
 
         [TestMethod]
         public void TestCreateFromInstance() {
             Order order = new Order() {
-                to_address = Address.Create(toAddress),
-                from_address = Address.Create(fromAddress),
+                to_address = Address.Create(null, toAddress),
+                from_address = Address.Create(null, fromAddress),
                 reference = "OrderRef",
-                shipments = shipments.Select(shipment => Shipment.Create(shipment)).ToList(),
+                shipments = shipments.Select(shipment => Shipment.Create(null, shipment)).ToList(),
                 carrier_accounts = new List<CarrierAccount>() { new CarrierAccount() { id = "ca_7642d249fdcf47bcb5da9ea34c96dfcf" } }
             };
 
-            order.Create();
+            order.Create(null);
 
             Assert.IsNotNull(order.id);
             Assert.AreEqual(order.reference, "OrderRef");
@@ -97,8 +97,8 @@ namespace EasyPostTest {
 
         [TestMethod]
         public void TestBuyOrder() {
-            Order order = Order.Create(parameters);
-            order.Buy("USPS", "Priority");
+            Order order = Order.Create(null, parameters);
+            order.Buy(null, "USPS", "Priority");
 
             Assert.IsNotNull(order.shipments[0].postage_label);
         }
@@ -106,17 +106,17 @@ namespace EasyPostTest {
         [TestMethod]
         [ExpectedException(typeof(HttpException))]
         public void TestFailure() {
-            Order.Create(new Dictionary<string, object>());
+            Order.Create(null, new Dictionary<string, object>());
         }
 
         [TestMethod]
         public void TestOrderCarrierAccounts() {
             Dictionary<string, object> carrierAccounts = new Dictionary<string, object>() { { "id", "ca_7642d249fdcf47bcb5da9ea34c96dfcf" } };
             parameters.Add("carrier_accounts", carrierAccounts);
-            Order order = Order.Create(parameters);
+            Order order = Order.Create(null, parameters);
 
             parameters.Remove("carrier_accounts");
-            Order largeOrder = Order.Create(parameters);
+            Order largeOrder = Order.Create(null, parameters);
 
             Assert.IsTrue(order.rates.Count < largeOrder.rates.Count);
         }

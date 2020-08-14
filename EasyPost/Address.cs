@@ -36,11 +36,11 @@ namespace EasyPost {
         /// </summary>
         /// <param name="id">String representing an Address. Starts with "adr_".</param>
         /// <returns>EasyPost.Address instance.</returns>
-        public static Address Retrieve(string id) {
+        public static Address Retrieve(Client client, string id) {
             Request request = new Request("v2/addresses/{id}");
             request.AddUrlSegment("id", id);
 
-            return request.Execute<Address>();
+            return request.Execute<Address>(client);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace EasyPost {
         /// All invalid keys will be ignored.
         /// </param>
         /// <returns>EasyPost.Address instance.</returns>
-        public static Address Create(Dictionary<string, object> parameters = null) {
+        public static Address Create(Client client, Dictionary<string, object> parameters = null) {
             List<string> verifications = null, strictVerifications = null;
             parameters = parameters ?? new Dictionary<string, object>();
 
@@ -77,15 +77,15 @@ namespace EasyPost {
                 parameters.Remove("strict_verifications");
             }
 
-            return SendCreate(parameters, verifications, strictVerifications);
+            return SendCreate(client, parameters, verifications, strictVerifications);
         }
 
         /// <summary>
         /// Create this Address.
         /// </summary>
         /// <exception cref="ResourceAlreadyCreated">Address already has an id.</exception>
-        public void Create() {
-            Create(verify, verify_strict);
+        public void Create(Client client) {
+            Create(client, verify, verify_strict);
         }
 
         /// <summary>
@@ -101,13 +101,13 @@ namespace EasyPost {
         /// Possible items are "delivery" and "zip4".
         /// </param>
         /// <exception cref="ResourceAlreadyCreated">Address already has an id.</exception>
-        public void Create(List<string> verifications = null, List<string> strictVerifications = null) {
+        public void Create(Client client, List<string> verifications = null, List<string> strictVerifications = null) {
             if (id != null)
                 throw new ResourceAlreadyCreated();
-            Merge(SendCreate(this.AsDictionary(), verifications, strictVerifications));
+            Merge(SendCreate(client, this.AsDictionary(), verifications, strictVerifications));
         }
 
-        private static Address SendCreate(Dictionary<string, object> parameters, List<string> verifications = null, List<string> strictVerifications = null) {
+        private static Address SendCreate(Client client, Dictionary<string, object> parameters, List<string> verifications = null, List<string> strictVerifications = null) {
             Request request = new Request("v2/addresses", Method.POST);
             request.AddBody(new Dictionary<string, object>() { { "address", parameters } });
 
@@ -119,16 +119,16 @@ namespace EasyPost {
                 request.AddParameter("verify_strict[]", verification, ParameterType.QueryString);
             }
 
-            return request.Execute<Address>();
+            return request.Execute<Address>(client);
         }
 
         /// <summary>
         /// Verify an address.
         /// </summary>
         /// <returns>EasyPost.Address instance. Check message for verification failures.</returns>
-        public void Verify(string carrier = null) {
+        public void Verify(Client client, string carrier = null) {
             if (id == null)
-                Create();
+                Create(client);
 
             Request request = new Request("v2/addresses/{id}/verify") {
                 RootElement = "address"
@@ -138,7 +138,7 @@ namespace EasyPost {
             if (carrier != null)
                 request.AddParameter("carrier", carrier, ParameterType.QueryString);
 
-            Merge(request.Execute<Address>());
+            Merge(request.Execute<Address>(client));
         }
 
         /// <summary>
@@ -158,9 +158,9 @@ namespace EasyPost {
         ///   * {"email", string}
         /// All invalid keys will be ignored.
         /// </param>
-        public static Address CreateAndVerify(Dictionary<string, object> parameters = null) {
+        public static Address CreateAndVerify(Client client, Dictionary<string, object> parameters = null) {
             parameters["strict_verifications"] = new List<string>() { "delivery" };
-            return Address.Create(parameters);
+            return Address.Create(client, parameters);
         }
     }
 }

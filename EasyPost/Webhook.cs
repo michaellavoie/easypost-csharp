@@ -16,10 +16,10 @@ namespace EasyPost {
         /// Get a list of scan forms.
         /// </summary>
         /// <returns>List of EasyPost.Webhook insteances.</returns>
-        public static List<Webhook> List(Dictionary<string, object> parameters = null) {
+        public static List<Webhook> List(Client client, Dictionary<string, object> parameters = null) {
             Request request = new Request("v2/webhooks");
 
-            WebhookList webhookList = request.Execute<WebhookList>();
+            WebhookList webhookList = request.Execute<WebhookList>(client);
             return webhookList.webhooks;
         }
 
@@ -28,11 +28,11 @@ namespace EasyPost {
         /// </summary>
         /// <param name="id">String representing a webhook. Starts with "hook_".</param>
         /// <returns>EasyPost.User instance.</returns>
-        public static Webhook Retrieve(string id) {
+        public static Webhook Retrieve(Client client, string id) {
             Request request = new Request("v2/webhooks/{id}");
             request.AddUrlSegment("id", id);
 
-            return request.Execute<Webhook>();
+            return request.Execute<Webhook>(client);
         }
 
         /// <summary>
@@ -44,27 +44,27 @@ namespace EasyPost {
         /// All invalid keys will be ignored.
         /// </param>
         /// <returns>EasyPost.Webhook instance.</returns>
-        public static Webhook Create(Dictionary<string, object> parameters) {
+        public static Webhook Create(Client client, Dictionary<string, object> parameters) {
             Request request = new Request("v2/webhooks", Method.POST);
             request.AddBody(new Dictionary<string, object>() { { "webhook", parameters } });
 
-            return request.Execute<Webhook>();
+            return request.Execute<Webhook>(client);
         }
 
         /// <summary>
         /// Enable a Webhook that has been disabled previously.
         /// </summary>
-        public void Update() {
+        public void Update(Client client) {
             Request request = new Request("v2/webhooks/{id}", Method.PUT);
             request.AddUrlSegment("id", id);
 
-            Merge(request.Execute<Webhook>());
+            Merge(request.Execute<Webhook>(client));
         }
 
-        public void Destroy() {
+        public void Destroy(Client client) {
             Request request = new Request("v2/webhooks/{id}", Method.DELETE);
             request.AddUrlSegment("id", id);
-            request.Execute();
+            request.Execute(client);
         }
     }
 }

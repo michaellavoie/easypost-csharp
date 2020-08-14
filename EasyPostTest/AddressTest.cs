@@ -25,7 +25,7 @@ namespace EasyPostTest {
         [TestMethod]
         [ExpectedException(typeof(HttpException))]
         public void TestRetrieveInvalidId() {
-            Address.Retrieve("not-an-id");
+            Address.Retrieve(null, "not-an-id");
         }
 
         [TestMethod]
@@ -39,12 +39,12 @@ namespace EasyPostTest {
                 { "country", "US" },
                 { "zip", "94107" }
             };
-            Address address = Address.Create(parameters);
+            Address address = Address.Create(null, parameters);
             Assert.IsNotNull(address.id);
             Assert.AreEqual(address.company, "Simpler Postage Inc");
             Assert.IsNull(address.name);
 
-            Address retrieved = Address.Retrieve(address.id);
+            Address retrieved = Address.Retrieve(null, address.id);
             Assert.AreEqual(address.id, retrieved.id);
         }
 
@@ -61,7 +61,7 @@ namespace EasyPostTest {
                 { "verifications", new List<string>() { "delivery", "zip4" } }
             };
 
-            Address address = Address.Create(parameters);
+            Address address = Address.Create(null, parameters);
             Assert.IsNotNull(address.verifications.delivery);
             Assert.IsNotNull(address.verifications.zip4);
 
@@ -72,7 +72,7 @@ namespace EasyPostTest {
                 { "verifications", new List<string>() { "delivery", "zip4" } }
             };
 
-            address = Address.Create(parameters);
+            address = Address.Create(null, parameters);
             Assert.AreEqual(address.verifications.delivery.success, false);
         }
 
@@ -89,7 +89,7 @@ namespace EasyPostTest {
                 verify = new List<string>() { "delivery", "zip4" }
             };
 
-            address.Create();
+            address.Create(null);
             Assert.IsNotNull(address.verifications.delivery);
             Assert.IsNotNull(address.verifications.zip4);
         }
@@ -104,18 +104,18 @@ namespace EasyPostTest {
                 { "strict_verifications", new List<string>() { "delivery", "zip4" } }
             };
 
-            Address address = Address.Create(parameters);
+            Address address = Address.Create(null, parameters);
         }
 
         [TestMethod]
         public void TestCreateInstance() {
-            address.Create();
+            address.Create(null);
             Assert.IsNotNull(address.id);
         }
 
         [TestMethod]
         public void TestInstanceCreateWithVerificationParams() {
-            address.Create(new List<string>() { "delivery", "zip4" });
+            address.Create(null, new List<string>() { "delivery", "zip4" });
             Assert.IsNotNull(address.verifications.delivery);
             Assert.IsNotNull(address.verifications.zip4);
         }
@@ -126,7 +126,7 @@ namespace EasyPostTest {
             address = new Address() {
                 company = "Simpler Postage Inc"
             };
-            address.Create(strictVerifications: new List<string> { "delivery", "zip4" });
+            address.Create(null, strictVerifications: new List<string> { "delivery", "zip4" });
         }
 
         [TestMethod]
@@ -141,8 +141,8 @@ namespace EasyPostTest {
                 { "zip", "94107" },
                 { "residential", true }
             };
-            Address address = Address.Create(parameters);
-            address.Verify();
+            Address address = Address.Create(null, parameters);
+            address.Verify(null);
             Assert.IsNotNull(address.id);
             Assert.AreEqual(address.company, "SIMPLER POSTAGE INC");
             Assert.IsNull(address.name);
@@ -161,8 +161,8 @@ namespace EasyPostTest {
                 { "zip", "94107" },
                 { "residential", true }
             };
-            Address address = Address.Create(parameters);
-            address.Verify("usps");
+            Address address = Address.Create(null, parameters);
+            address.Verify(null, "usps");
             Assert.IsNotNull(address.id);
             Assert.AreEqual(address.company, "SIMPLER POSTAGE INC");
             Assert.AreEqual(address.street1, "164 TOWNSEND ST UNIT 1");
@@ -171,7 +171,7 @@ namespace EasyPostTest {
 
         [TestMethod]
         public void TestVerifyBeforeCreate() {
-            address.Verify();
+            address.Verify(null);
             Assert.IsNotNull(address.id);
         }
 
@@ -186,7 +186,7 @@ namespace EasyPostTest {
                 { "country", "US" },
                 { "zip", "94107" }
             };
-            Address address = Address.CreateAndVerify(parameters);
+            Address address = Address.CreateAndVerify(null, parameters);
             Assert.IsNotNull(address.id);
             Assert.AreEqual(address.company, "SIMPLER POSTAGE INC");
             Assert.IsNull(address.name);
@@ -205,10 +205,10 @@ namespace EasyPostTest {
                 zip = "94107"
             };
 
-            address.Create();
+            address.Create(null);
 
             try {
-                address.Verify();
+                address.Verify(null);
             }
             catch (HttpException e) {
                 Assert.AreEqual("ADDRESS.VERIFY.FAILURE", e.Code);

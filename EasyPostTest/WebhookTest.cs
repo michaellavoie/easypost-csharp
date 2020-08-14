@@ -14,15 +14,15 @@ namespace EasyPostTest {
 
         [TestMethod]
         public void TestCRUD() {
-            Webhook webhook = Webhook.Create(new Dictionary<string, object>() { { "url", "https://www.foobar.com" } });
+            Webhook webhook = Webhook.Create(null, new Dictionary<string, object>() { { "url", "https://www.foobar.com" } });
             Assert.AreEqual(webhook.url, "https://www.foobar.com");
 
-            webhook.Update();
+            webhook.Update(null);
 
-            List<Webhook> webhooks = Webhook.List();
+            List<Webhook> webhooks = Webhook.List(null);
             CollectionAssert.Contains(webhooks.Select(w => w.id).ToList(), webhook.id);
 
-            webhook.Destroy();
+            webhook.Destroy(null);
             try {
                 User.Retrieve(webhook.id);
                 Assert.Fail();

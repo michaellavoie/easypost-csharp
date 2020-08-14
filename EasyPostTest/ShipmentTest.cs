@@ -48,9 +48,9 @@ namespace EasyPostTest {
         }
 
         private Shipment BuyShipment() {
-            Shipment shipment = Shipment.Create(parameters);
-            shipment.GetRates();
-            shipment.Buy(shipment.rates.First());
+            Shipment shipment = Shipment.Create(null, parameters);
+            shipment.GetRates(null);
+            shipment.Buy(null, shipment.rates.First());
             return shipment;
         }
 
@@ -97,12 +97,12 @@ namespace EasyPostTest {
 
         [TestMethod]
         public void TestCreateAndRetrieve() {
-            Shipment shipment = Shipment.Create(parameters);
+            Shipment shipment = Shipment.Create(null, parameters);
 
             Assert.IsNotNull(shipment.id);
             Assert.AreEqual(shipment.reference, "ShipmentRef");
 
-            Shipment retrieved = Shipment.Retrieve(shipment.id);
+            Shipment retrieved = Shipment.Retrieve(null, shipment.id);
             Assert.AreEqual(shipment.id, retrieved.id);
         }
 
@@ -124,7 +124,7 @@ namespace EasyPostTest {
                 { "country", "US" }
             };
 
-            Shipment shipment = Shipment.Create(parameters);
+            Shipment shipment = Shipment.Create(null, parameters);
 
             Assert.AreEqual(((DateTime)shipment.options.label_date).ToString("yyyy-MM-ddTHH:mm:ssZ"), tomorrow);
             Assert.AreEqual(shipment.options.print_custom[0]["value"], "value");
@@ -144,7 +144,7 @@ namespace EasyPostTest {
             shipment.options = new Options() {
                 label_date = tomorrow
             };
-            shipment.Create();
+            shipment.Create(null);
 
             Assert.AreEqual(tomorrow.ToString("yyyy-MM-ddTHH:mm:ssZ"), ((DateTime)shipment.options.label_date).ToString("yyyy-MM-ddTHH:mm:ssZ"));
         }
@@ -159,7 +159,7 @@ namespace EasyPostTest {
                     { "predefined_package", "FEDEXBOX" }
                 } }
             };
-            Shipment shipment = Shipment.Create(parameters);
+            Shipment shipment = Shipment.Create(null, parameters);
 
             Assert.IsNotNull(shipment.id);
             Assert.AreEqual(shipment.messages[0].carrier, "USPS");
@@ -171,44 +171,44 @@ namespace EasyPostTest {
         [ExpectedException(typeof(ResourceAlreadyCreated))]
         public void TestCreateWithId() {
             Shipment shipment = new Shipment() { id = "shp_asdlf" };
-            shipment.Create();
+            shipment.Create(null);
         }
 
         [TestMethod]
         public void TestCreateWithPreCreatedAttributes() {
             Shipment shipment = CreateShipmentResource();
-            shipment.Create();
+            shipment.Create(null);
             Assert.IsNotNull(shipment.id);
         }
 
         [TestMethod]
         public void TestGetRatesWithoutCreate() {
             Shipment shipment = CreateShipmentResource();
-            shipment.GetRates();
+            shipment.GetRates(null);
             Assert.IsNotNull(shipment.id);
             Assert.IsNotNull(shipment.rates);
         }
 
         [TestMethod]
         public void TestCreateAndBuyPlusInsurance() {
-            Shipment shipment = Shipment.Create(parameters);
+            Shipment shipment = Shipment.Create(null, parameters);
             Assert.IsNotNull(shipment.rates);
             Assert.AreNotEqual(shipment.rates.Count, 0);
 
-            shipment.Buy(shipment.rates[0]);
+            shipment.Buy(null, shipment.rates[0]);
             Assert.IsNotNull(shipment.postage_label);
             Assert.AreNotEqual(shipment.fees.Count, 0);
             CollectionAssert.AllItemsAreNotNull(shipment.fees.Select(f => f.type).ToList());
 
-            shipment.Insure(100.1);
+            shipment.Insure(null, 100.1);
             Assert.AreNotEqual(shipment.insurance, 100.1);
         }
 
         [TestMethod]
         public void TestBuyWithInsurance() {
-            Shipment shipment = Shipment.Create(parameters);
-            shipment.GetRates();
-            shipment.Buy(shipment.rates.First(), "100.00");
+            Shipment shipment = Shipment.Create(null, parameters);
+            shipment.GetRates(null);
+            shipment.Buy(null, shipment.rates.First(), "100.00");
 
             Assert.AreEqual(shipment.insurance, "100.00");
         }
@@ -223,7 +223,7 @@ namespace EasyPostTest {
         [TestMethod]
         public void TestRefund() {
             Shipment shipment = BuyShipment();
-            shipment.Refund();
+            shipment.Refund(null);
             Assert.IsNotNull(shipment.refund_status);
         }
 
@@ -231,7 +231,7 @@ namespace EasyPostTest {
         public void TestGenerateLabel() {
             Shipment shipment = BuyShipment();
 
-            shipment.GenerateLabel("pdf");
+            shipment.GenerateLabel(null, "pdf");
             Assert.IsNotNull(shipment.postage_label);
         }
 
@@ -244,29 +244,29 @@ namespace EasyPostTest {
 
             Shipment shipment = new Shipment() { rates = new List<Rate>() { highestUSPS, lowestUSPS, highestUPS, lowestUPS } };
 
-            Rate rate = shipment.LowestRate();
+            Rate rate = shipment.LowestRate(null);
             Assert.AreEqual(rate, lowestUSPS);
 
-            rate = shipment.LowestRate(includeCarriers: new List<string>() { "UPS" });
+            rate = shipment.LowestRate(null, includeCarriers: new List<string>() { "UPS" });
             Assert.AreEqual(rate, lowestUPS);
 
-            rate = shipment.LowestRate(includeServices: new List<string>() { "Priority" });
+            rate = shipment.LowestRate(null, includeServices: new List<string>() { "Priority" });
             Assert.AreEqual(rate, highestUSPS);
 
-            rate = shipment.LowestRate(excludeCarriers: new List<string>() { "USPS" });
+            rate = shipment.LowestRate(null, excludeCarriers: new List<string>() { "USPS" });
             Assert.AreEqual(rate, lowestUPS);
 
-            rate = shipment.LowestRate(excludeServices: new List<string>() { "ParcelSelect" });
+            rate = shipment.LowestRate(null, excludeServices: new List<string>() { "ParcelSelect" });
             Assert.AreEqual(rate, highestUSPS);
 
-            rate = shipment.LowestRate(includeCarriers: new List<string>() { "FedEx" });
+            rate = shipment.LowestRate(null, includeCarriers: new List<string>() { "FedEx" });
             Assert.IsNull(rate);
         }
 
         [TestMethod]
         public void TestCarrierAccounts() {
-            Address to = Address.Create(toAddress);
-            Address from = Address.Create(fromAddress);
+            Address to = Address.Create(null, toAddress);
+            Address from = Address.Create(null, fromAddress);
             Parcel parcel = Parcel.Create(new Dictionary<string, object>() {
                 { "length", 8 },
                 { "width", 6 },
@@ -286,7 +286,7 @@ namespace EasyPostTest {
                 parcel = parcel,
                 carrier_accounts = new List<CarrierAccount> { new CarrierAccount { id = "ca_7642d249fdcf47bcb5da9ea34c96dfcf" } }
             };
-            shipment.Create();
+            shipment.Create(null);
             if (shipment.rates.Count > 0)
                 Assert.IsTrue(shipment.rates.TrueForAll(r => r.carrier_account_id == "ca_7642d249fdcf47bcb5da9ea34c96dfcf"));
         }
@@ -295,7 +295,7 @@ namespace EasyPostTest {
         [TestMethod]
         public void TestCarrierAccountsString() {
             parameters["carrier_accounts"] = new List<string>() { "ca_7642d249fdcf47bcb5da9ea34c96dfcf" };
-            Shipment shipment = Shipment.Create(parameters);
+            Shipment shipment = Shipment.Create(null, parameters);
 
             foreach (Rate rate in shipment.rates) {
                 Assert.AreEqual("ca_7642d249fdcf47bcb5da9ea34c96dfcf", rate.carrier_account_id);
@@ -304,10 +304,10 @@ namespace EasyPostTest {
 
         [TestMethod]
         public void TestList() {
-            ShipmentList shipmentList = Shipment.List(new Dictionary<string, object>() { { "page_size", 1 } });
+            ShipmentList shipmentList = Shipment.List(null, new Dictionary<string, object>() { { "page_size", 1 } });
             Assert.AreNotEqual(0, shipmentList.shipments.Count);
 
-            ShipmentList nextShipmentList = shipmentList.Next();
+            ShipmentList nextShipmentList = shipmentList.Next(null);
             Assert.AreNotEqual(shipmentList.shipments[0].id, nextShipmentList.shipments[0].id);
         }
     }

@@ -50,13 +50,13 @@ namespace EasyPostTest {
                 { "country", "US" },
                 { "zip", "94102" }
             };
-            shipment = Shipment.Create(new Dictionary<string, object>() {
+            shipment = Shipment.Create(null, new Dictionary<string, object>() {
                 { "parcel", parcel },
                 { "to_address", toAddress },
                 { "from_address", fromAddress },
                 { "reference", "ShipmentRef" }
             });
-            shipment.Buy(shipment.LowestRate());
+            shipment.Buy(null, shipment.LowestRate(null));
 
             parameters = new Dictionary<string, object>() {
                 { "is_account_address", false },

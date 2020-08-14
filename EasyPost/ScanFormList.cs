@@ -14,11 +14,11 @@ namespace EasyPost {
         /// Get the next page of scan forms based on the original parameters passed to ScanForm.List().
         /// </summary>
         /// <returns>A new EasyPost.ScanFormList instance.</returns>
-        public ScanFormList Next() {
+        public ScanFormList Next(Client client) {
             filters = filters ?? new Dictionary<string, object>();
             filters["before_id"] = scan_forms.Last().id;
 
-            return ScanForm.List(filters);
+            return ScanForm.List(client, filters);
         }
     }
 }

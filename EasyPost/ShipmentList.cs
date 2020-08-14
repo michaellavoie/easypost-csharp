@@ -13,11 +13,11 @@ namespace EasyPost {
         /// Get the next page of shipments based on the original parameters passed to Shipment.List().
         /// </summary>
         /// <returns>A new EasyPost.ShipmentList instance.</returns>
-        public ShipmentList Next() {
+        public ShipmentList Next(Client client) {
             filters = filters ?? new Dictionary<string, object>();
             filters["before_id"] = shipments.Last().id;
 
-            return Shipment.List(filters);
+            return Shipment.List(client, filters);
         }
     }
 }

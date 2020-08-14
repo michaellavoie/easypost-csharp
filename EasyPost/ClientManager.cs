@@ -13,10 +13,12 @@ namespace EasyPost {
             return getCurrent();
         }
 
+        [Obsolete("SetCurrent() does not support multi-threaded requests")]
         public static void SetCurrent(string apiKey) {
             SetCurrent(() => new Client(new ClientConfiguration(apiKey)));
         }
 
+        [Obsolete("SetCurrent() does not support multi-threaded requests")]
         public static void SetCurrent(Func<Client> getClient) {
             getCurrent = getClient;
         }

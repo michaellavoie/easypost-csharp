@@ -32,11 +32,11 @@ namespace EasyPost {
         /// <param name="parameters">
         /// </param>
         /// <returns>Instance of EasyPost.ScanForm</returns>
-        public static ScanFormList List(Dictionary<string, object> parameters = null) {
+        public static ScanFormList List(Client client, Dictionary<string, object> parameters = null) {
             Request request = new Request("v2/scan_forms");
             request.AddQueryString(parameters ?? new Dictionary<string, object>());
 
-            ScanFormList scanFormList = request.Execute<ScanFormList>();
+            ScanFormList scanFormList = request.Execute<ScanFormList>(client);
             scanFormList.filters = parameters;
             return scanFormList;
         }
@@ -46,7 +46,7 @@ namespace EasyPost {
         /// </summary>
         /// <param name="shipments">Shipments to be associated with the ScanForm. Only id is required.</param>
         /// <returns>EasyPost.ScanForm instance.</returns>
-        public static ScanForm Create(List<Shipment> shipments) {
+        public static ScanForm Create(Client client, List<Shipment> shipments) {
             Dictionary<string, object> parameters = new Dictionary<string, object> {
                 { "shipments", shipments }
             };
@@ -54,7 +54,7 @@ namespace EasyPost {
             Request request = new Request("v2/scan_forms", Method.POST);
             request.AddBody(new Dictionary<string, object>() { { "scan_form", parameters } });
 
-            return request.Execute<ScanForm>();
+            return request.Execute<ScanForm>(client);
         }
 
         /// <summary>
@@ -62,11 +62,11 @@ namespace EasyPost {
         /// </summary>
         /// <param name="id">String representing a scan form, starts with "sf_".</param>
         /// <returns>EasyPost.ScanForm instance.</returns>
-        public static ScanForm Retrieve(string id) {
+        public static ScanForm Retrieve(Client client, string id) {
             Request request = new Request("v2/scan_forms/{id}");
             request.AddUrlSegment("id", id);
 
-            return request.Execute<ScanForm>();
+            return request.Execute<ScanForm>(client);
         }
     }
 }

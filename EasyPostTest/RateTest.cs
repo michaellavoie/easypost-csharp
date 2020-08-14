@@ -32,7 +32,7 @@ namespace EasyPostTest {
                 { "country", "US" },
                 { "zip", "94107" }
             };
-            Shipment shipment = Shipment.Create(new Dictionary<string, object>() {
+            Shipment shipment = Shipment.Create(null, new Dictionary<string, object>() {
                 { "parcel", new Dictionary<string, object>() {
                     { "length", 8 },
                     { "width", 6 },
@@ -44,7 +44,7 @@ namespace EasyPostTest {
                 { "reference", "ShipmentRef" }
             });
 
-            shipment.GetRates();
+            shipment.GetRates(null);
             Rate rate = Rate.Retrieve(shipment.rates[0].id);
             Assert.AreEqual(rate.id, shipment.rates[0].id);
 
